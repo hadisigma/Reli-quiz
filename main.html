@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Martin Luther - Lernzettel & Quiz</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #fef3c7 0%, #fed7aa 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            color: #92400e;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .subtitle {
+            font-size: 1.3rem;
+            color: #b45309;
+            font-style: italic;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 18px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .tab-btn.active {
+            background: #d97706;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(217, 119, 6, 0.3);
+        }
+
+        .tab-btn:not(.active) {
+            background: white;
+            color: #d97706;
+        }
+
+        .tab-btn:hover:not(.active) {
+            background: #fef3c7;
+        }
+
+        .content {
+            display: none;
+        }
+
+        .content.active {
+            display: block;
+        }
+
+        .lernzettel {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .section {
+            margin-bottom: 40px;
+            padding-bottom: 30px;
+            border-bottom: 3px solid #fef3c7;
+        }
+
+        .section:last-child {
+            border-bottom: none;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            color: #92400e;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #fed7aa;
+        }
+
+        .info-box {
+            background: #fffbeb;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border-left: 5px solid #d97706;
+        }
+
+        .year {
+            font-weight: bold;
+            color: #d97706;
+            font-size: 1.1rem;
+        }
+
+        .highlight {
+            background: #fef3c7;
+            padding: 2px 8px;
+            border-radius: 5px;
+            font-weight: 600;
+        }
+
+        .quiz-container {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e5e7eb;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #d97706;
+            transition: width 0.3s;
+        }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+            color: #6b7280;
+        }
+
+        .score {
+            font-weight: bold;
+            color: #d97706;
+        }
+
+        .question {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #1f2937;
+            margin-bottom: 30px;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .option {
+            padding: 20px;
+            border: 3px solid #e5e7eb;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1.1rem;
+            background: white;
+        }
+
+        .option:hover:not(.disabled) {
+            border-color: #fed7aa;
+            background: #fffbeb;
+            transform: translateX(5px);
+        }
+
+        .option.selected {
+            border-color: #d97706;
+            background: #fef3c7;
+        }
+
+        .option.correct {
+            border-color: #10b981;
+            background: #d1fae5;
+        }
+
+        .option.wrong {
+            border-color: #ef4444;
+            background: #fee2e2;
+        }
+
+        .option.disabled {
+            cursor: not-allowed;
+        }
+
+        .btn {
+            padding: 15px 40px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #d97706;
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: #b45309;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(217, 119, 6, 0.3);
+        }
+
+        .btn:disabled {
+            background: #d1d5db;
+            cursor: not-allowed;
+        }
+
+        .result-screen {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .result-score {
+            font-size: 5rem;
+            font-weight: bold;
+            color: #d97706;
+            margin: 20px 0;
+        }
+
+        .result-message {
+            font-size: 1.5rem;
+            color: #6b7280;
+            margin-bottom: 30px;
+        }
+
+        ul {
+            margin-left: 20px;
+            line-height: 1.8;
+        }
+
+        li {
+            margin-bottom: 10px;
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-left: 30px;
+            margin-bottom: 20px;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 8px;
+            width: 12px;
+            height: 12px;
+            background: #d97706;
+            border-radius: 50%;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .lernzettel, .quiz-container {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>⚡ Martin Luther ⚡</h1>
+            <p class="subtitle">Die Reformation und ihr Wegbereiter</p>
+        </header>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('lernzettel')">
+                📚 Lernzettel
+            </button>
+            <button class="tab-btn" onclick="switchTab('quiz')">
+                🎯 Quiz
+            </button>
+        </div>
+
+        <div id="lernzettel" class="content active">
+            <div class="lernzettel">
+                <div class="section">
+                    <h2 class="section-title">👶 Kindheit und Jugend (1483-1501)</h2>
+                    <div class="timeline-item">
+                        <span class="year">10. November 1483:</span> Geburt Martin Luthers in <span class="highlight">Eisleben</span> (Grafschaft Mansfeld)
+                    </div>
+                    <div class="timeline-item">
+                        <span class="year">11. November 1483:</span> Taufe auf den Namen Martin (nach dem Tagesheiligen Martin von Tours)
+                    </div>
+                    <div class="info-box">
+                        <strong>Familie:</strong> Vater Hans Luther war Bergmann und später Hüttenmeister. Die Familie zog kurz nach Martins Geburt nach Mansfeld um.
+                    </div>
+                    <div class="timeline-item">
+                        <span class="year">1488-1497:</span> Schulbesuch in Mansfeld - strenge religiöse Erziehung
+                    </div>
+                    <div class="timeline-item">
+                        <span class="year">1497-1498:</span> Schule in Magdeburg (bei den Brüdern vom gemeinsamen Leben)
+                    </div>
+                    <div class="timeline-item">
+                        <span class="year">1498-1501:</span> Schule in Eisenach bei Verwandten
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">📖 Studium und Wendepunkt (1501-1512)</h2>
+                    <div class="timeline-item">
+                        <span class="year">1501:</span> Beginn des Studiums an der Universität Erfurt
+                    </div>
+                    <div class="timeline-item">
+                        <span class="year">1502:</span> Baccalaureus artium (Bachelor)
+                    </div>
+                    <div class="timeline-item">
+                        <span class="year">1505:</span> Magister artium (Master) - Beginn des Jurastudiums auf Wunsch des Vaters
+                    </div>
+                    <div class="info-box">
+                        <strong>2. Juli 1505 - Das Gewittererlebnis bei Stotternheim:</strong><br>
+                        "Ein Sturm veränderte alles" - Auf dem Rückweg von einem Besuch bei seinen Eltern geriet Luther in ein schweres Gewitter. In Todesangst rief er: <em>"Hilf, heilige Anna, ich will ein Mönch werden!"</em> Dieses Erlebnis markierte die entscheidende Wende in seinem Leben.
+                    </div>
+                    <div class="timeline-item">
+                        <span class="year">17. Juli 1505:</span> Eintritt ins Augustinerkloster in Erfurt
+                    </div>
+                    <div class="timeline-item">
+                        <span class="year">1507:</span> Priesterweihe - Erste Messe (Primiz)
+                    </div>
+                    <div class="timeline-item">
+                        <span class="year">1508:</span> Beginn der Lehrtätigkeit in Wittenberg - Studium der Theologie
+                    </div>
+                    <div class="timeline-item">
+                        <span class="year">1510-1511:</span> Reise nach Rom im Auftrag des Ordens
+                    </div>
+                    <div class="timeline-item">
+                        <span class="year">1512:</span> Rückkehr nach Wittenberg
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">🎓 Theologische Entwicklung (1512-1517)</h2>
+                    <div class="timeline-item">
+                        <span class="year">19. Oktober 1512:</span> <span class="highlight">Promotion zum Doktor der Theologie</span> an der Universität Wittenberg
+                    </div>
+                    <div class="timeline-item">
+                        <span class="year">1513:</span> Professor für Bibelauslegung - Beginn der Vorlesungen über die Psalmen
+                    </div>
+                    <div class="info-box">
+                        <strong>⚡ Das Turmerlebnis (ca. 1513-1518):</strong><br><br>
+                        <strong>Welche Frage beschäftigte Luther in seiner Zeit im Kloster?</strong><br>
+                        Luther quälte die Frage: <em>"Wie bekomme ich einen gnädigen Gott?"</em> Trotz aller Gebete, Fasten und Bußübungen fand er keine innere Ruhe und Gewissheit über sein Seelenheil.<br><br>
+                        
+                        <strong>Welche Entdeckungen machte er im Turm des Klosters?</strong><br>
+                        Bei der Vorbereitung seiner Vorlesungen über den Römerbrief (Kapitel 1,17) im Studierzimmer des Wittenberger Klosters hatte Luther seine entscheidende theologische Erkenntnis:<br>
+                        <em>"Der Gerechte wird aus Glauben leben"</em><br><br>
+                        
+                        Er erkannte: <span class="highlight">Die Gerechtigkeit vor Gott ist ein Geschenk, das allein durch den Glauben empfangen wird</span> - nicht durch eigene Werke oder Leistungen. Diese Erkenntnis befreite ihn von seinen Ängsten und wurde zum Kernstück der Reformation.
+                    </div>
+                    <div class="timeline-item">
+                        <span class="year">1515-1516:</span> Vorlesungen über den Römerbrief
+                    </div>
+                    <div class="timeline-item">
+                        <span class="year">1516-1517:</span> Vorlesungen über den Galaterbrief
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">⚡ Die Reformation breitet sich aus (1517-1521)</h2>
+                    <div class="info-box" style="border-left-color: #dc2626;">
+                        <strong>📜 Der Wittenberger Bote (95 Thesen)</strong><br><br>
+                        <strong>Wo:</strong> Schlosskirche zu Wittenberg (Tür der Kirche)<br>
+                        <strong>Wann:</strong> 31. Oktober 1517<br>
+                        <strong>Was:</strong> Luther veröffentlichte seine <span class="highlight">95 Thesen gegen den Ablasshandel</span>. Er kritisierte besonders den Verkauf von Ablassbriefen durch Johann Tetzel mit dem berühmten Spruch: "Sobald das Geld im Kasten klingt, die Seele aus dem Fegefeuer springt."<br><br>
+                        Die Thesen verbreiteten sich dank des Buchdrucks rasend schnell in ganz Deutschland und Europa.
+                    </div>
+                    <div class="timeline-item">
+                        <span class="year">1518:</span> Verhör in Augsburg vor Kardinal Cajetan
+                    </div>
+                    <div class="timeline-item">
+                        <span class="year">1519:</span> Leipziger Disputation mit Johannes Eck
+                    </div>
+                    <div class="timeline-item">
+                        <span class="year">1520:</span> Luthers große reformatorische Hauptschriften
+                    </div>
+                    <div class="timeline-item">
+                        <span class="year">15. Juni 1520:</span> Bannbulle "Exsurge Domine" - Papst Leo X. droht Luther mit dem Kirchenbann
+                    </div>
+                    <div class="timeline-item">
+                        <span class="year">10. Dezember 1520:</span> Luther verbrennt die Bannbulle öffentlich in Wittenberg
+                    </div>
+                    <div class="info-box">
+                        <strong>🏛️ Reichstag zu Worms (April 1521):</strong><br>
+                        Luther wurde vor Kaiser Karl V. und die Reichsstände zitiert. Er sollte seine Lehren widerrufen.<br><br>
+                        Seine berühmten Worte: <em>"Hier stehe ich, ich kann nicht anders. Gott helfe mir. Amen."</em><br><br>
+                        Am 26. Mai 1521 wurde Luther durch das Wormser Edikt für vogelfrei erklärt.
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">🏰 Wartburg und Bibelübersetzung (1521-1522)</h2>
+                    <div class="timeline-item">
+                        <span class="year">4. Mai 1521:</span> "Entführung" Luthers durch Kurfürst Friedrich den Weisen auf die Wartburg
+                    </div>
+                    <div class="info-box">
+                        <strong>Leben auf der Wartburg als "Junker Jörg":</strong><br>
+                        Luther lebte inkognito auf der Wartburg und nutzte die Zeit für intensive theologische Arbeit.
+                    </div>
+                    <div class="timeline-item">
+                        <span class="year">Dezember 1521 - März 1522:</span> <span class="highlight">Übersetzung des Neuen Testaments ins Deutsche</span> (in nur 11 Wochen!)
+                    </div>
+                    <div class="info-box">
+                        <strong>📖 Die Bedeutung der Bibelübersetzung:</strong><br>
+                        <ul>
+                            <li><strong>Erste vollständige deutsche Bibelübersetzung</strong> aus den Ursprachen (Griechisch und Hebräisch)</li>
+                            <li>Luther übersetzte nicht wörtlich, sondern "dem Volk aufs Maul geschaut" - verständliche Alltagssprache</li>
+                            <li>Das Neue Testament (September-Testament) erschien 1522</li>
+                            <li>Die vollständige Bibel (mit Altem Testament) erschien 1534</li>
+                            <li>Besondere Bedeutung: Der Johannesvers 3,16 war Luther besonders wichtig</li>
+                            <li>Die Bibelübersetzung trug wesentlich zur Entwicklung der deutschen Hochsprache bei</li>
+                        </ul>
+                    </div>
+                    <div class="timeline-item">
+                        <span class="year">März 1522:</span> Rückkehr nach Wittenberg - Invokavitpredigten gegen radikale Reformen
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">👨‍👩‍👧‍👦 Familie und weitere Reformen (1523-1530)</h2>
+                    <div class="timeline-item">
+                        <span class="year">1523:</span> Erste evangelische Märtyrer in Brüssel
+                    </div>
+                    <div class="timeline-item">
+                        <span class="year">1524:</span> Bauernkrieg beginnt
+                    </div>
+                    <div class="timeline-item">
+                        <span class="year">13. Juni 1525:</span> <span class="highlight">Heirat mit Katharina von Bora</span>
+                    </div>
+                    <div class="info-box">
+                        <strong>Katharina von Bora (1499-1552):</strong><br>
+                        Ehemalige Nonne aus dem Zisterzienserinnenkloster Marienthron. Sie floh 1523 mit elf weiteren Nonnen aus dem Kloster. Luther half bei ihrer Vermittlung und heiratete sie schließlich selbst.<br><br>
+                        Die Ehe galt als Vorbild für das evangelische Pfarrhaus. Das Ehepaar hatte 6 Kinder: Johannes, Elisabeth, Magdalena, Martin, Paul und Margarethe.
+                    </div>
+                    <div class="timeline-item">
+                        <span class="year">1526:</span> Deutsche Messe und Ordnung des Gottesdienstes
+                    </div>
+                    <div class="timeline-item">
+                        <span class="year">1529:</span> Großer und Kleiner Katechismus - Marburger Religionsgespräch
+                    </div>
+                    <div class="timeline-item">
+                        <span class="year">1530:</span> Reichstag zu Augsburg - Confessio Augustana (Augsburger Bekenntnis)
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">📝 Spätwerk und Tod (1534-1546)</h2>
+                    <div class="timeline-item">
+                        <span class="year">1534:</span> Vollständige deutsche Bibelübersetzung erscheint
+                    </div>
+                    <div class="timeline-item">
+                        <span class="year">1537:</span> Schmalkaldische Artikel
+                    </div>
+                    <div class="timeline-item">
+                        <span class="year">1545:</span> Letzte Überarbeitung der deutschen Bibel
+                    </div>
+                    <div class="info-box">
+                        <strong>⚰️ Luthers Tod:</strong><br>
+                        Luther starb in seiner Geburtsstadt <span class="highlight">Eisleben</span> am <strong>18. Februar 1546</strong>. Er war dorthin gereist, um einen Streit zwischen den Grafen von Mansfeld zu schlichten.<br><br>
+                        Seine letzten Worte waren: <em>"Wir sind Bettler, das ist wahr."</em><br><br>
+                        Luther wurde in der Schlosskirche zu Wittenberg beigesetzt - dort, wo er 1517 seine 95 Thesen veröffentlicht hatte.
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">🎯 Luthers wichtigste Lehren</h2>
+                    <div class="info-box">
+                        <strong>Die vier "Sola" der Reformation:</strong>
+                        <ul>
+                            <li><strong>Sola Scriptura</strong> - Allein die Schrift (Bibel als einzige Autorität)</li>
+                            <li><strong>Sola Gratia</strong> - Allein durch Gnade (Erlösung ist ein Geschenk Gottes)</li>
+                            <li><strong>Sola Fide</strong> - Allein durch Glauben (Gerechtigkeit durch Glauben, nicht durch Werke)</li>
+                            <li><strong>Solus Christus</strong> - Allein Christus (Jesus als einziger Mittler zwischen Gott und Mensch)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="quiz" class="content">
+            <div class="quiz-container">
+                <div id="quiz-content"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const quizQuestions = [
+            {
+                question: "Wann wurde Martin Luther geboren?",
+                options: ["10. November 1480", "10. November 1483", "11. November 1483", "10. November 1488"],
+                correct: 1
+            },
+            {
+                question: "Wo wurde Martin Luther geboren?",
+                options: ["Wittenberg", "Erfurt", "Eisleben", "Mansfeld"],
+                correct: 2
+            },
+            {
+                question: "In welchem Jahr begann Luther sein Studium in Erfurt?",
+                options: ["1498", "1501", "1505", "1507"],
+                correct: 1
+            },
+            {
+                question: "Was geschah am 2. Juli 1505?",
+                options: ["Luther wurde Priester", "Luther begann sein Jurastudium", "Das Gewittererlebnis bei Stotternheim", "Luther trat ins Kloster ein"],
+                correct: 2
+            },
+            {
+                question: "Welches Gelübde machte Luther während des Gewitters?",
+                options: ["Er wollte Priester werden", "Er wollte Mönch werden", "Er wollte die Bibel übersetzen", "Er wollte nach Rom pilgern"],
+                correct: 1
+            },
+            {
+                question: "Wann wurde Luther zum Priester geweiht?",
+                options: ["1505", "1506", "1507", "1508"],
+                correct: 2
+            },
+            {
+                question: "In welchem Jahr begann Luther seine Lehrtätigkeit in Wittenberg?",
+                options: ["1505", "1507", "1508", "1512"],
+                correct: 2
+            },
+            {
+                question: "Wann wurde Luther zum Doktor der Theologie promoviert?",
+                options: ["1508", "1510", "1512", "1513"],
+                correct: 2
+            },
+            {
+                question: "Was war Luthers zentrale Frage während seiner Zeit im Kloster?",
+                options: ["Wie kann ich reich werden?", "Wie bekomme ich einen gnädigen Gott?", "Wie werde ich Papst?", "Wie kann ich die Bibel verstehen?"],
+                correct: 1
+            },
+            {
+                question: "Was erkannte Luther während seines Turmerlebnisses?",
+                options: ["Man muss viele gute Werke tun", "Gerechtigkeit kommt allein durch Glauben", "Der Papst hat immer Recht", "Man muss Ablass kaufen"],
+                correct: 1
+            },
+            {
+                question: "Wann veröffentlichte Luther seine 95 Thesen?",
+                options: ["31. Oktober 1515", "31. Oktober 1517", "1. November 1517", "31. Dezember 1517"],
+                correct: 1
+            },
+            {
+                question: "Wogegen richteten sich Luthers 95 Thesen hauptsächlich?",
+                options: ["Gegen den Kaiser", "Gegen die Universität", "Gegen den Ablasshandel", "Gegen die Bibel"],
+                correct: 2
+            },
+            {
+                question: "Wo fand der berühmte Reichstag statt, vor dem Luther erscheinen musste?",
+                options: ["Wittenberg", "Augsburg", "Worms", "Leipzig"],
+                correct: 2
+            },
+            {
+                question: "In welchem Jahr fand der Reichstag zu Worms statt?",
+                options: ["1517", "1519", "1520", "1521"],
+                correct: 3
+            },
+            {
+                question: "Was waren Luthers berühmte Worte beim Reichstag zu Worms?",
+                options: ["Ich widerrufe alles", "Hier stehe ich, ich kann nicht anders", "Der Papst hat Recht", "Ich gebe auf"],
+                correct: 1
+            },
+            {
+                question: "Wohin wurde Luther nach dem Reichstag zu Worms gebracht?",
+                options: ["Nach Rom", "Ins Gefängnis", "Auf die Wartburg", "Nach Erfurt"],
+                correct: 2
+            },
+            {
+                question: "Unter welchem Namen lebte Luther auf der Wartburg?",
+                options: ["Bruder Martin", "Junker Jörg", "Doktor Luther", "Herr Schmidt"],
+                correct: 1
+            },
+            {
+                question: "Was übersetzte Luther auf der Wartburg?",
+                options: ["Den Koran", "Das Alte Testament", "Das Neue Testament", "Griechische Philosophie"],
+                correct: 2
+            },
+            {
+                question: "Wie lange brauchte Luther für die Übersetzung des Neuen Testaments?",
+                options: ["3 Wochen", "11 Wochen", "6 Monate", "2 Jahre"],
+                correct: 1
+            },
+            {
+                question: "Wann erschien die vollständige Luther-Bibel?",
+                options: ["1522", "1525", "1530", "1534"],
+                correct: 3
+            },
+            {
+                question: "Mit wem heiratete Luther im Jahr 1525?",
+                options: ["Anna von Sachsen", "Katharina von Bora", "Elisabeth Luther", "Maria von Wittenberg"],
+                correct: 1
+            },
+            {
+                question: "Was war Katharina von Bora, bevor sie Luther heiratete?",
+                options: ["Lehrerin", "Nonne", "Bäuerin", "Adlige"],
+                correct: 1
+            },
+            {
+                question: "Wie viele Kinder hatten Martin und Katharina Luther?",
+                options: ["3", "4", "6", "8"],
+                correct: 2
+            },
+            {
+                question: "Was bedeutet 'Sola Scriptura'?",
+                options: ["Allein durch Werke", "Allein die Schrift", "Allein durch Glauben", "Allein Christus"],
+                correct: 1
+            },
+            {
+                question: "Was bedeutet 'Sola Fide'?",
+                options: ["Allein die Schrift", "Allein durch Gnade", "Allein durch Glauben", "Allein Christus"],
+                correct: 2
+            },
+            {
+                question: "Wo starb Martin Luther?",
+                options: ["Wittenberg", "Erfurt", "Eisleben", "Wartburg"],
+                correct: 2
+            },
+            {
+                question: "Wann starb Martin Luther?",
+                options: ["18. Februar 1543", "18. Februar 1545", "18. Februar 1546", "18. Februar 1547"],
+                correct: 2
+            },
+            {
+                question: "Wo wurde Luther beigesetzt?",
+                options: ["In Eisleben", "In der Schlosskirche zu Wittenberg", "Auf der Wartburg", "In Erfurt"],
+                correct: 1
+            }
+        ];
+
+        let currentQuestion = 0;
+        let selectedAnswer = null;
+        let showResult = false;
+        let score = 0;
+        let quizCompleted = false;
+
+        function switchTab(tab) {
+            document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            
+            document.getElementById(tab).classList.add('active');
+            event.target.classList.add('active');
+            
+            if (tab === 'quiz' && !quizCompleted) {
+                renderQuiz();
+            }
+        }
+
+        function renderQuiz() {
+            const container = document.getElementById('quiz-content');
+            
+            if (quizCompleted) {
+                container.innerHTML = `
+                    <div class="result-screen">
+                        <h3 style="font-size: 2.5rem; color: #92400e; margin-bottom: 20px;">
+                            Quiz abgeschlossen! 🎉
+                        </h3>
+                        <div class="result-score">${score}/${quizQuestions.length}</div>
+                        <p class="result-message">
+                            ${score === quizQuestions.length 
+                                ? '🌟 Perfekt! Du bist ein echter Luther-Experte!' 
+                                : score >= quizQuestions.length * 0.8
+                                ? '🎯 Sehr gut! Du kennst dich ausgezeichnet mit Luther aus!'
+                                : score >= quizQuestions.length * 0.6
+                                ? '👍 Gut gemacht! Du hast ein solides Wissen über Luther.'
+                                : score >= quizQuestions.length * 0.4
+                                ? '📚 Nicht schlecht, aber schau dir den Lernzettel noch einmal an!'
+                                : '💪 Übe weiter! Der Lernzettel hilft dir dabei.'}
+                        </p>
+                        <button class="btn btn-primary" onclick="resetQuiz()">
+                            🔄 Quiz wiederholen
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            const question = quizQuestions[currentQuestion];
+            const progress = ((currentQuestion + 1) / quizQuestions.length) * 100;
+
+            container.innerHTML = `
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: ${progress}%"></div>
+                </div>
+                
+                <div class="question-header">
+                    <span>Frage ${currentQuestion + 1} von ${quizQuestions.length}</span>
+                    <span class="score">Punktzahl: ${score}/${quizQuestions.length}</span>
+                </div>
+
+                <div class="question">${question.question}</div>
+
+                <div class="options">
+                    ${question.options.map((option, index) => `
+                        <div class="option ${selectedAnswer === index ? 'selected' : ''} 
+                                    ${showResult && index === question.correct ? 'correct' : ''}
+                                    ${showResult && selectedAnswer === index && index !== question.correct ? 'wrong' : ''}
+                                    ${showResult ? 'disabled' : ''}"
+                             onclick="selectAnswer(${index})">
+                            ${option}
+                            ${showResult && index === question.correct ? ' ✓' : ''}
+                            ${showResult && selectedAnswer === index && index !== question.correct ? ' ✗' : ''}
+                        </div>
+                    `).join('')}
+                </div>
+
+                ${!showResult ? `
+                    <button class="btn btn-primary" 
+                            onclick="checkAnswer()" 
+                            ${selectedAnswer === null ? 'disabled' : ''}>
+                        Antwort überprüfen
+                    </button>
+                ` : `
+                    <button class="btn btn-primary" onclick="nextQuestion()">
+                        ${currentQuestion < quizQuestions.length - 1 ? 'Nächste Frage →' : 'Quiz beenden'}
+                    </button>
+                `}
+            `;
+        }
+
+        function selectAnswer(index) {
+            if (showResult) return;
+            selectedAnswer = index;
+            renderQuiz();
+        }
+
+        function checkAnswer() {
+            if (selectedAnswer === null) return;
+            showResult = true;
+            if (selectedAnswer === quizQuestions[currentQuestion].correct) {
+                score++;
+            }
+            renderQuiz();
+        }
+
+        function nextQuestion() {
+            if (currentQuestion < quizQuestions.length - 1) {
+                currentQuestion++;
+                selectedAnswer = null;
+                showResult = false;
+                renderQuiz();
+            } else {
+                quizCompleted = true;
+                renderQuiz();
+            }
+        }
+
+        function resetQuiz() {
+            currentQuestion = 0;
+            selectedAnswer = null;
+            showResult = false;
+            score = 0;
+            quizCompleted = false;
+            renderQuiz();
+        }
+
+        // Initial render
+        renderQuiz();
+    </script>
+</body>
+</html>
